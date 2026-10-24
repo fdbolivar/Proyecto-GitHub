@@ -1,23 +1,50 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora y Graficador </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Calculadora y Graficador de Funciones</title>
     <!-- Chart.js para renderizado interactivo de gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #f0f3f9;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1);
+            /* Tema Oscuro por defecto */
+            --bg-body: radial-gradient(circle at top right, #1e1b4b, #0f172a 60%);
+            --bg-card: rgba(30, 41, 59, 0.75);
+            --border-color: rgba(255, 255, 255, 0.12);
             --primary: #38bdf8;
             --primary-hover: #0ea5e9;
             --accent: #818cf8;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --input-bg: #0b1325;
+            --formula-bg: rgba(15, 23, 42, 0.9);
+            --badge-bg: rgba(15, 23, 42, 0.65);
+            --grid-color: rgba(255, 255, 255, 0.08);
+            --chart-tooltip-bg: rgba(15, 23, 42, 0.95);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
             --success: #34d399;
+            --topbar-bg: rgba(15, 23, 42, 0.6);
+        }
+
+        [data-theme="light"] {
+            /* Tema Claro */
+            --bg-body: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(15, 23, 42, 0.1);
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #6366f1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #ffffff;
+            --formula-bg: rgba(241, 245, 249, 0.95);
+            --badge-bg: rgba(241, 245, 249, 0.8);
+            --grid-color: rgba(15, 23, 42, 0.08);
+            --chart-tooltip-bg: rgba(255, 255, 255, 0.96);
+            --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+            --success: #059669;
+            --topbar-bg: rgba(255, 255, 255, 0.8);
         }
 
         * {
@@ -25,36 +52,88 @@
             padding: 0;
             box-sizing: border-box;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
         }
 
         body {
             min-height: 100vh;
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 60%);
+            background: var(--bg-body);
             color: var(--text-main);
             padding: 1.5rem;
+            padding-top: max(1.5rem, env(safe-area-inset-top));
+            padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+            padding-left: max(1.5rem, env(safe-area-inset-left));
+            padding-right: max(1.5rem, env(safe-area-inset-right));
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        /* Barra Superior de Herramientas (Tema e Idioma) */
+        .top-bar {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-btn {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 0.9rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .toggle-btn:active {
+            transform: scale(0.96);
+        }
+
         header {
             text-align: center;
             max-width: 900px;
-            margin-bottom: 2rem;
+            width: 100%;
+            margin-bottom: 1.5rem;
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 800;
-            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            background: linear-gradient(to right, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
+            line-height: 1.25;
         }
 
         header p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            line-height: 1.4;
+            padding: 0 0.5rem;
         }
 
         .container {
@@ -65,23 +144,18 @@
             width: 100%;
         }
 
-        @media (max-width: 920px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .card {
             background: var(--bg-card);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--border-color);
             border-radius: 1rem;
             padding: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--card-shadow);
         }
 
         .section-title {
-            font-size: 1.2rem;
+            font-size: clamp(1.05rem, 3vw, 1.2rem);
             font-weight: 600;
             margin-bottom: 1rem;
             display: flex;
@@ -91,66 +165,77 @@
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         label {
             display: block;
             font-size: 0.85rem;
             font-weight: 500;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.35rem;
             color: var(--text-muted);
         }
 
+        /* Inputs y selects táctiles (16px para evitar auto-zoom) */
         select, input[type="number"], input[type="text"] {
             width: 100%;
+            min-height: 44px;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             padding: 0.6rem 0.8rem;
             color: var(--text-main);
-            font-size: 0.95rem;
+            font-size: 16px;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         select:focus, input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
         }
 
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
+            gap: 0.75rem;
         }
 
         .formula-display {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: var(--formula-bg);
+            border: 1px solid var(--border-color);
             border-radius: 0.6rem;
-            padding: 0.8rem 1rem;
-            margin-bottom: 1.2rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
             text-align: center;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 1.1rem;
+            font-size: clamp(0.95rem, 3.5vw, 1.1rem);
             color: var(--primary);
             font-weight: bold;
             word-break: break-all;
         }
 
+        /* Botón accesible y táctil */
         .btn {
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
+            min-height: 44px;
             padding: 0.75rem 1rem;
             background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: #0f172a;
+            color: #ffffff;
+            font-size: 1rem;
             font-weight: 700;
             border: none;
             border-radius: 0.5rem;
             cursor: pointer;
             text-align: center;
-            transition: transform 0.15s, opacity 0.2s;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        [data-theme="dark"] .btn {
+            color: #0f172a;
         }
 
         .btn:hover {
@@ -159,86 +244,157 @@
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: scale(0.98);
+            opacity: 0.85;
         }
 
         .eval-section {
-            margin-top: 1.5rem;
+            margin-top: 1.25rem;
             padding-top: 1.2rem;
             border-top: 1px solid var(--border-color);
+        }
+
+        .eval-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .eval-input-wrap {
+            flex: 1;
         }
 
         .eval-result {
             margin-top: 0.8rem;
             padding: 0.8rem;
-            background: rgba(52, 211, 153, 0.1);
+            background: rgba(52, 211, 153, 0.12);
             border: 1px solid rgba(52, 211, 153, 0.3);
             border-radius: 0.5rem;
             color: var(--success);
             font-size: 0.95rem;
             font-weight: 600;
             text-align: center;
+            word-break: break-word;
         }
 
+        /* Contenedor del gráfico */
         .chart-wrapper {
             position: relative;
-            height: 420px;
+            height: clamp(260px, 45vh, 420px);
             width: 100%;
+            touch-action: pan-y;
         }
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
 
         .info-badge {
-            background: rgba(15, 23, 42, 0.6);
+            background: var(--badge-bg);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 0.8rem;
+            border-radius: 0.6rem;
+            padding: 0.75rem;
+            text-align: center;
         }
 
         .info-badge .badge-title {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-muted);
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.25rem;
         }
 
         .info-badge .badge-val {
-            font-size: 1.05rem;
+            font-size: clamp(0.95rem, 3vw, 1.05rem);
             font-weight: 700;
             color: var(--text-main);
+            word-break: break-word;
         }
 
         canvas {
             max-width: 100%;
+            height: 100% !important;
+        }
+
+        /* Adaptaciones para Pantallas Pequeñas */
+        @media (max-width: 920px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 0.75rem;
+                padding-top: max(0.75rem, env(safe-area-inset-top));
+                padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+                padding-left: max(0.75rem, env(safe-area-inset-left));
+                padding-right: max(0.75rem, env(safe-area-inset-right));
+            }
+
+            .card {
+                padding: 1.1rem;
+                border-radius: 0.85rem;
+            }
+
+            .chart-wrapper {
+                height: 290px;
+            }
+
+            .grid-2 {
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .eval-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .eval-row .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- Selector de Tema e Idioma -->
+    <div class="top-bar">
+        <button class="toggle-btn" id="langToggle" aria-label="Cambiar idioma">
+            <span>🌐</span>
+            <span id="langLabel">English</span>
+        </button>
+        <button class="toggle-btn" id="themeToggle" aria-label="Cambiar tema">
+            <span id="themeIcon">☀️</span>
+            <span id="themeLabel">Modo Claro</span>
+        </button>
+    </div>
+
     <header>
-        <h1>Calculadora Funciones</h1>
-        <p>Configura los parámetros matemáticos, calcula valores puntuales y visualiza la gráfica en tiempo real.</p>
+        <h1 data-i18n="appTitle">Calculadora de Funciones</h1>
+        <p data-i18n="appSubtitle">Configura los parámetros matemáticos, evalúa puntos específicos y observa la gráfica en tiempo real.</p>
     </header>
 
     <div class="container">
         <!-- Panel de Configuración -->
         <div class="card">
-            <h2 class="section-title">Parámetros de la Función</h2>
+            <h2 class="section-title" data-i18n="sectionParams">Parámetros de la Función</h2>
             
             <div class="form-group">
-                <label for="functionType">Tipo de Función</label>
+                <label for="functionType" data-i18n="lblFuncType">Tipo de Función</label>
                 <select id="functionType">
-                    <option value="linear">Lineal: f(x) = a·x + b</option>
-                    <option value="quadratic" selected>Cuadrática: f(x) = a·x² + b·x + c</option>
-                    <option value="cubic">Cúbica: f(x) = a·x³ + b·x² + c·x + d</option>
-                    <option value="sine">Senoidal: f(x) = a·sin(b·x + c) + d</option>
-                    <option value="exponential">Exponencial: f(x) = a·e^(b·x) + c</option>
+                    <option value="linear" data-i18n="optLinear">Lineal: f(x) = a·x + b</option>
+                    <option value="quadratic" data-i18n="optQuadratic" selected>Cuadrática: f(x) = a·x² + b·x + c</option>
+                    <option value="cubic" data-i18n="optCubic">Cúbica: f(x) = a·x³ + b·x² + c·x + d</option>
+                    <option value="sine" data-i18n="optSine">Senoidal: f(x) = a·sin(b·x + c) + d</option>
+                    <option value="exponential" data-i18n="optExponential">Exponencial: f(x) = a·e^(b·x) + c</option>
                 </select>
             </div>
 
@@ -250,22 +406,22 @@
             <div id="paramsContainer">
                 <div class="grid-2">
                     <div class="form-group" id="group-a">
-                        <label for="param-a">Coeficiente a</label>
-                        <input type="number" id="param-a" value="1" step="any">
+                        <label for="param-a" data-i18n="lblParamA">Coeficiente a</label>
+                        <input type="number" id="param-a" value="1" step="any" inputmode="decimal">
                     </div>
                     <div class="form-group" id="group-b">
-                        <label for="param-b">Coeficiente b</label>
-                        <input type="number" id="param-b" value="0" step="any">
+                        <label for="param-b" data-i18n="lblParamB">Coeficiente b</label>
+                        <input type="number" id="param-b" value="0" step="any" inputmode="decimal">
                     </div>
                 </div>
                 <div class="grid-2">
                     <div class="form-group" id="group-c">
-                        <label for="param-c">Término c</label>
-                        <input type="number" id="param-c" value="-4" step="any">
+                        <label for="param-c" data-i18n="lblParamC">Término c</label>
+                        <input type="number" id="param-c" value="-4" step="any" inputmode="decimal">
                     </div>
                     <div class="form-group" id="group-d" style="display: none;">
-                        <label for="param-d">Término d</label>
-                        <input type="number" id="param-d" value="0" step="any">
+                        <label for="param-d" data-i18n="lblParamD">Término d</label>
+                        <input type="number" id="param-d" value="0" step="any" inputmode="decimal">
                     </div>
                 </div>
             </div>
@@ -273,28 +429,26 @@
             <!-- Rango del Eje X -->
             <div class="grid-2">
                 <div class="form-group">
-                    <label for="xMin">X Mínimo</label>
-                    <input type="number" id="xMin" value="-6" step="any">
+                    <label for="xMin" data-i18n="lblXMin">X Mínimo</label>
+                    <input type="number" id="xMin" value="-6" step="any" inputmode="decimal">
                 </div>
                 <div class="form-group">
-                    <label for="xMax">X Máximo</label>
-                    <input type="number" id="xMax" value="6" step="any">
+                    <label for="xMax" data-i18n="lblXMax">X Máximo</label>
+                    <input type="number" id="xMax" value="6" step="any" inputmode="decimal">
                 </div>
             </div>
 
-            <button class="btn" id="btnUpdate">Actualizar Gráfica</button>
+            <button class="btn" id="btnUpdate" data-i18n="btnUpdate">Actualizar Gráfica</button>
 
             <!-- Sección de Cálculo Puntual -->
             <div class="eval-section">
-                <h2 class="section-title" style="font-size: 1.05rem;">Calculadora Puntual</h2>
-                <div class="grid-2">
-                    <div>
-                        <label for="evalX">Evaluar en x =</label>
-                        <input type="number" id="evalX" value="2" step="any">
+                <h2 class="section-title" style="font-size: 1.05rem;" data-i18n="sectionEval">Calculadora Puntual</h2>
+                <div class="eval-row">
+                    <div class="eval-input-wrap">
+                        <label for="evalX" data-i18n="lblEvalX">Evaluar en x =</label>
+                        <input type="number" id="evalX" value="2" step="any" inputmode="decimal">
                     </div>
-                    <div style="display: flex; align-items: flex-end;">
-                        <button class="btn" id="btnEval" style="height: 38px; padding: 0.4rem;">Calcular f(x)</button>
-                    </div>
+                    <button class="btn" id="btnEval" style="min-width: 140px;" data-i18n="btnEval">Calcular f(x)</button>
                 </div>
                 <div class="eval-result" id="evalOutput">
                     f(2) = 0
@@ -304,22 +458,22 @@
 
         <!-- Panel del Gráfico -->
         <div class="card">
-            <h2 class="section-title">Gráfica Interactiva</h2>
+            <h2 class="section-title" data-i18n="sectionChart">Gráfica Interactiva</h2>
             <div class="chart-wrapper">
                 <canvas id="functionChart"></canvas>
             </div>
 
             <div class="info-grid">
                 <div class="info-badge">
-                    <div class="badge-title">Corte en Y (x = 0)</div>
-                    <div class="badge-val" id="badgeYIntercept">-4</div>
+                    <div class="badge-title" data-i18n="badgeYIntercept">Corte en Y (x = 0)</div>
+                    <div class="badge-val" id="badgeYIntercept">(0, -4)</div>
                 </div>
                 <div class="info-badge">
-                    <div class="badge-title">Propiedad Clave</div>
+                    <div class="badge-title" data-i18n="badgeKeyProp">Propiedad Clave</div>
                     <div class="badge-val" id="badgeFeature">Vértice: (0, -4)</div>
                 </div>
                 <div class="info-badge">
-                    <div class="badge-title">Rango de X</div>
+                    <div class="badge-title" data-i18n="badgeXRange">Rango de X</div>
                     <div class="badge-val" id="badgeRange">[-6, 6]</div>
                 </div>
             </div>
@@ -327,10 +481,94 @@
     </div>
 
     <script>
+        // Diccionario de Traducción (Español / Inglés)
+        const i18n = {
+            es: {
+                appTitle: "Calculadora de Funciones",
+                appSubtitle: "Configura los parámetros matemáticos, evalúa puntos específicos y observa la gráfica en tiempo real.",
+                sectionParams: "Parámetros de la Función",
+                lblFuncType: "Tipo de Función",
+                optLinear: "Lineal: f(x) = a·x + b",
+                optQuadratic: "Cuadrática: f(x) = a·x² + b·x + c",
+                optCubic: "Cúbica: f(x) = a·x³ + b·x² + c·x + d",
+                optSine: "Senoidal: f(x) = a·sin(b·x + c) + d",
+                optExponential: "Exponencial: f(x) = a·e^(b·x) + c",
+                lblParamA: "Coeficiente a",
+                lblParamB: "Coeficiente b",
+                lblParamC: "Término c",
+                lblParamD: "Término d",
+                lblXMin: "X Mínimo",
+                lblXMax: "X Máximo",
+                btnUpdate: "Actualizar Gráfica",
+                sectionEval: "Calculadora Puntual",
+                lblEvalX: "Evaluar en x =",
+                btnEval: "Calcular f(x)",
+                sectionChart: "Gráfica Interactiva",
+                badgeYIntercept: "Corte en Y (x = 0)",
+                badgeKeyProp: "Propiedad Clave",
+                badgeXRange: "Rango de X",
+                themeLight: "Modo Claro",
+                themeDark: "Modo Oscuro",
+                vertex: "Vértice",
+                root: "Raíz (y=0)",
+                slope: "Pendiente",
+                amplitude: "Amplitud",
+                period: "Periodo",
+                straightLine: "Línea recta (a = 0)",
+                activeMode: "Modo Activo",
+                evalPrompt: "Por favor ingresa un número válido",
+                evaluatedPoint: "Punto evaluado"
+            },
+            en: {
+                appTitle: "Function Calculator & Grapher",
+                appSubtitle: "Configure mathematical parameters, evaluate specific points, and view interactive plots in real time.",
+                sectionParams: "Function Parameters",
+                lblFuncType: "Function Type",
+                optLinear: "Linear: f(x) = a·x + b",
+                optQuadratic: "Quadratic: f(x) = a·x² + b·x + c",
+                optCubic: "Cubic: f(x) = a·x³ + b·x² + c·x + d",
+                optSine: "Sine: f(x) = a·sin(b·x + c) + d",
+                optExponential: "Exponential: f(x) = a·e^(b·x) + c",
+                lblParamA: "Coefficient a",
+                lblParamB: "Coefficient b",
+                lblParamC: "Term c",
+                lblParamD: "Term d",
+                lblXMin: "Min X",
+                lblXMax: "Max X",
+                btnUpdate: "Update Graph",
+                sectionEval: "Point Calculator",
+                lblEvalX: "Evaluate at x =",
+                btnEval: "Calculate f(x)",
+                sectionChart: "Interactive Graph",
+                badgeYIntercept: "Y-Intercept (x = 0)",
+                badgeKeyProp: "Key Property",
+                badgeXRange: "X Range",
+                themeLight: "Light Mode",
+                themeDark: "Dark Mode",
+                vertex: "Vertex",
+                root: "Root (y=0)",
+                slope: "Slope",
+                amplitude: "Amplitude",
+                period: "Period",
+                straightLine: "Straight line (a = 0)",
+                activeMode: "Active Mode",
+                evalPrompt: "Please enter a valid number",
+                evaluatedPoint: "Evaluated point"
+            }
+        };
+
+        // Estado Global
+        let currentLang = localStorage.getItem('calc_lang') || 'es';
+        let currentTheme = localStorage.getItem('calc_theme') || 'dark';
         let chartInstance = null;
         let highlightedPoint = { x: 2, y: 0 };
 
-        // Referencias del DOM
+        // Referencias DOM
+        const langToggle = document.getElementById('langToggle');
+        const langLabel = document.getElementById('langLabel');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
         const functionTypeSelect = document.getElementById('functionType');
         const paramA = document.getElementById('param-a');
         const paramB = document.getElementById('param-b');
@@ -347,7 +585,72 @@
         const badgeFeature = document.getElementById('badgeFeature');
         const badgeRange = document.getElementById('badgeRange');
 
-        // Configuración de visibilidad de campos según tipo de función
+        // Aplicar Idioma
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('calc_lang', lang);
+            document.documentElement.lang = lang;
+
+            const t = i18n[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerText = t[key];
+                }
+            });
+
+            langLabel.innerText = lang === 'es' ? 'English' : 'Español';
+            updateThemeButtonText();
+            updateBadges();
+            if (chartInstance) {
+                chartInstance.data.datasets[1].label = `${t.evaluatedPoint} (${highlightedPoint.x}, ${highlightedPoint.y})`;
+                chartInstance.update();
+            }
+        }
+
+        // Aplicar Tema
+        function applyTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('calc_theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeButtonText();
+            updateChartTheme();
+        }
+
+        function updateThemeButtonText() {
+            const t = i18n[currentLang];
+            if (currentTheme === 'dark') {
+                themeIcon.innerText = '☀️';
+                themeLabel.innerText = t.themeLight;
+            } else {
+                themeIcon.innerText = '🌙';
+                themeLabel.innerText = t.themeDark;
+            }
+        }
+
+        // Actualizar colores del gráfico según el tema
+        function updateChartTheme() {
+            if (!chartInstance) return;
+            const isDark = currentTheme === 'dark';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            const legendColor = isDark ? '#cbd5e1' : '#334155';
+            const tooltipBg = isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.96)';
+            const tooltipText = isDark ? '#f8fafc' : '#0f172a';
+            const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(15, 23, 42, 0.15)';
+
+            chartInstance.options.scales.x.grid.color = gridColor;
+            chartInstance.options.scales.x.ticks.color = textColor;
+            chartInstance.options.scales.y.grid.color = gridColor;
+            chartInstance.options.scales.y.ticks.color = textColor;
+            chartInstance.options.plugins.legend.labels.color = legendColor;
+            chartInstance.options.plugins.tooltip.backgroundColor = tooltipBg;
+            chartInstance.options.plugins.tooltip.bodyColor = tooltipText;
+            chartInstance.options.plugins.tooltip.borderColor = tooltipBorder;
+            chartInstance.update();
+        }
+
+        // Visibilidad de parámetros según el tipo de función
         function updateParamFields() {
             const type = functionTypeSelect.value;
             groupC.style.display = (type === 'linear') ? 'none' : 'block';
@@ -355,7 +658,7 @@
             renderFormulaText();
         }
 
-        // Evaluar f(x) con los parámetros actuales
+        // Evaluación numérica
         function evaluateFunction(x) {
             const type = functionTypeSelect.value;
             const a = parseFloat(paramA.value) || 0;
@@ -379,7 +682,7 @@
             }
         }
 
-        // Crear representación en texto de la fórmula
+        // Texto de la fórmula
         function renderFormulaText() {
             const type = functionTypeSelect.value;
             const a = parseFloat(paramA.value) || 0;
@@ -402,8 +705,9 @@
             formulaPreview.innerText = text;
         }
 
-        // Calcular propiedades matemáticas destacadas
+        // Actualizar Badges con soporte multilenguaje
         function updateBadges() {
+            const t = i18n[currentLang];
             const type = functionTypeSelect.value;
             const a = parseFloat(paramA.value) || 0;
             const b = parseFloat(paramB.value) || 0;
@@ -419,27 +723,27 @@
                 if (a !== 0) {
                     const vx = -b / (2 * a);
                     const vy = evaluateFunction(vx);
-                    badgeFeature.innerText = `Vértice: (${vx.toFixed(2)}, ${vy.toFixed(2)})`;
+                    badgeFeature.innerText = `${t.vertex}: (${vx.toFixed(2)}, ${vy.toFixed(2)})`;
                 } else {
-                    badgeFeature.innerText = `Línea recta (a = 0)`;
+                    badgeFeature.innerText = t.straightLine;
                 }
             } else if (type === 'linear') {
                 if (a !== 0) {
                     const root = -b / a;
-                    badgeFeature.innerText = `Raíz (y=0): x = ${root.toFixed(2)}`;
+                    badgeFeature.innerText = `${t.root}: x = ${root.toFixed(2)}`;
                 } else {
-                    badgeFeature.innerText = `Pendiente: 0`;
+                    badgeFeature.innerText = `${t.slope}: 0`;
                 }
             } else if (type === 'sine') {
                 const amp = Math.abs(a);
-                const period = b !== 0 ? (2 * Math.PI / Math.abs(b)).toFixed(2) : 'Infinito';
-                badgeFeature.innerText = `Amplitud: ${amp} | T: ${period}`;
+                const period = b !== 0 ? (2 * Math.PI / Math.abs(b)).toFixed(2) : '∞';
+                badgeFeature.innerText = `${t.amplitude}: ${amp} | T: ${period}`;
             } else {
-                badgeFeature.innerText = `Modo Activo`;
+                badgeFeature.innerText = t.activeMode;
             }
         }
 
-        // Generar puntos para el gráfico
+        // Puntos de datos
         function generateData() {
             let minX = parseFloat(xMinInput.value);
             let maxX = parseFloat(xMaxInput.value);
@@ -451,7 +755,7 @@
                 xMaxInput.value = maxX;
             }
 
-            const stepCount = 150;
+            const stepCount = 140;
             const step = (maxX - minX) / stepCount;
             const curvePoints = [];
 
@@ -466,7 +770,7 @@
             return { curvePoints, minX, maxX };
         }
 
-        // Renderizar o actualizar con Chart.js (con fallback nativo)
+        // Renderizado del Gráfico
         function drawChart() {
             renderFormulaText();
             updateBadges();
@@ -475,21 +779,31 @@
             const canvas = document.getElementById('functionChart');
 
             if (typeof Chart === 'undefined') {
-                // Fallback a dibujo directo en Canvas si no hay conexión a internet
                 drawCanvasFallback(canvas, curvePoints, minX, maxX);
                 return;
             }
+
+            const t = i18n[currentLang];
+            const isMobile = window.innerWidth < 640;
+            const isDark = currentTheme === 'dark';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            const legendColor = isDark ? '#cbd5e1' : '#334155';
+            const primaryColor = isDark ? '#38bdf8' : '#0284c7';
+            const tooltipBg = isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.96)';
+            const tooltipText = isDark ? '#f8fafc' : '#0f172a';
+            const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(15, 23, 42, 0.15)';
 
             const evalX = parseFloat(evalXInput.value);
             let pointDataset = [];
             if (!isNaN(evalX) && evalX >= minX && evalX <= maxX) {
                 pointDataset = [{
-                    label: `Punto evaluado (${highlightedPoint.x}, ${highlightedPoint.y})`,
+                    label: `${t.evaluatedPoint} (${highlightedPoint.x}, ${highlightedPoint.y})`,
                     data: [{ x: highlightedPoint.x, y: highlightedPoint.y }],
                     backgroundColor: '#34d399',
                     borderColor: '#ffffff',
                     borderWidth: 2,
-                    pointRadius: 6,
+                    pointRadius: isMobile ? 5 : 6,
                     pointHoverRadius: 8,
                     showLine: false
                 }];
@@ -497,9 +811,14 @@
 
             if (chartInstance) {
                 chartInstance.data.datasets[0].data = curvePoints;
+                chartInstance.data.datasets[0].borderColor = primaryColor;
+                chartInstance.data.datasets[0].backgroundColor = isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(2, 132, 199, 0.1)';
                 chartInstance.data.datasets[1] = pointDataset[0] || { data: [] };
                 chartInstance.options.scales.x.min = minX;
                 chartInstance.options.scales.x.max = maxX;
+                chartInstance.options.scales.x.ticks.font.size = isMobile ? 10 : 12;
+                chartInstance.options.scales.y.ticks.font.size = isMobile ? 10 : 12;
+                updateChartTheme();
                 chartInstance.update();
             } else {
                 const ctx = canvas.getContext('2d');
@@ -510,15 +829,15 @@
                             {
                                 label: 'f(x)',
                                 data: curvePoints,
-                                borderColor: '#38bdf8',
-                                backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                                borderWidth: 3,
+                                borderColor: primaryColor,
+                                backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : 'rgba(2, 132, 199, 0.1)',
+                                borderWidth: isMobile ? 2.5 : 3,
                                 fill: true,
                                 tension: 0.25,
                                 pointRadius: 0
                             },
                             ...(pointDataset.length ? pointDataset : [{
-                                label: 'Punto Evaluado',
+                                label: t.evaluatedPoint,
                                 data: [],
                                 backgroundColor: '#34d399',
                                 pointRadius: 6
@@ -535,16 +854,20 @@
                         plugins: {
                             legend: {
                                 labels: {
-                                    color: '#cbd5e1',
-                                    font: { size: 12 }
+                                    color: legendColor,
+                                    font: { size: isMobile ? 11 : 12 },
+                                    boxWidth: isMobile ? 24 : 40
                                 }
                             },
                             tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleColor: '#38bdf8',
-                                bodyColor: '#f8fafc',
-                                borderColor: 'rgba(255, 255, 255, 0.15)',
-                                borderWidth: 1
+                                backgroundColor: tooltipBg,
+                                titleColor: primaryColor,
+                                bodyColor: tooltipText,
+                                borderColor: tooltipBorder,
+                                borderWidth: 1,
+                                padding: 8,
+                                titleFont: { size: isMobile ? 11 : 13 },
+                                bodyFont: { size: isMobile ? 11 : 12 }
                             }
                         },
                         scales: {
@@ -552,19 +875,17 @@
                                 type: 'linear',
                                 min: minX,
                                 max: maxX,
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.08)'
-                                },
+                                grid: { color: gridColor },
                                 ticks: {
-                                    color: '#94a3b8'
+                                    color: textColor,
+                                    font: { size: isMobile ? 10 : 12 }
                                 }
                             },
                             y: {
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.08)'
-                                },
+                                grid: { color: gridColor },
                                 ticks: {
-                                    color: '#94a3b8'
+                                    color: textColor,
+                                    font: { size: isMobile ? 10 : 12 }
                                 }
                             }
                         }
@@ -573,7 +894,7 @@
             }
         }
 
-        // Fallback gráfico 2D nativo sin dependencias
+        // Fallback Canvas nativo
         function drawCanvasFallback(canvas, points, minX, maxX) {
             const ctx = canvas.getContext('2d');
             const w = canvas.parentElement.clientWidth;
@@ -581,8 +902,9 @@
             canvas.width = w;
             canvas.height = h;
 
-            ctx.clearRect(0, 0, w, 0);
-            ctx.fillStyle = '#0b1325';
+            const isDark = currentTheme === 'dark';
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = isDark ? '#0b1325' : '#ffffff';
             ctx.fillRect(0, 0, w, h);
 
             let minY = Infinity, maxY = -Infinity;
@@ -596,7 +918,7 @@
             const toCanvasY = y => h - 40 - ((y - minY) / (maxY - minY)) * (h - 60);
 
             // Ejes
-            ctx.strokeStyle = '#475569';
+            ctx.strokeStyle = isDark ? '#475569' : '#cbd5e1';
             ctx.lineWidth = 1;
             if (0 >= minX && 0 <= maxX) {
                 ctx.beginPath();
@@ -612,7 +934,7 @@
             }
 
             // Curva
-            ctx.strokeStyle = '#38bdf8';
+            ctx.strokeStyle = isDark ? '#38bdf8' : '#0284c7';
             ctx.lineWidth = 2.5;
             ctx.beginPath();
             points.forEach((p, idx) => {
@@ -624,11 +946,12 @@
             ctx.stroke();
         }
 
-        // Acción de evaluar punto específico
+        // Evaluar punto específico
         function performEvaluation() {
+            const t = i18n[currentLang];
             const x = parseFloat(evalXInput.value);
             if (isNaN(x)) {
-                evalOutput.innerText = 'Por favor ingresa un número válido';
+                evalOutput.innerText = t.evalPrompt;
                 return;
             }
             const y = evaluateFunction(x);
@@ -637,9 +960,17 @@
             drawChart();
         }
 
-        // Event Listeners
+        // Toggles Tema e Idioma
+        themeToggle.addEventListener('click', () => {
+            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        langToggle.addEventListener('click', () => {
+            applyLanguage(currentLang === 'es' ? 'en' : 'es');
+        });
+
+        // Event Listeners de Función y Parámetros
         functionTypeSelect.addEventListener('change', () => {
-            // Ajustar valores sugeridos según la función
             const type = functionTypeSelect.value;
             if (type === 'linear') {
                 paramA.value = 2;
@@ -684,7 +1015,15 @@
             if (e.key === 'Enter') performEvaluation();
         });
 
+        window.addEventListener('resize', () => {
+            if (chartInstance) {
+                chartInstance.resize();
+            }
+        });
+
         // Inicialización
+        applyTheme(currentTheme);
+        applyLanguage(currentLang);
         updateParamFields();
         performEvaluation();
     </script>
