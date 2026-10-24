@@ -20,17 +20,19 @@
             --input-bg: #0b1325;
             --formula-bg: rgba(15, 23, 42, 0.9);
             --badge-bg: rgba(15, 23, 42, 0.65);
+            --item-bg: rgba(15, 23, 42, 0.55);
             --grid-color: rgba(255, 255, 255, 0.08);
             --chart-tooltip-bg: rgba(15, 23, 42, 0.95);
             --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
             --success: #34d399;
+            --danger: #f87171;
             --topbar-bg: rgba(15, 23, 42, 0.6);
         }
 
         [data-theme="light"] {
             /* Tema Claro */
             --bg-body: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-card: rgba(255, 255, 255, 0.88);
             --border-color: rgba(15, 23, 42, 0.1);
             --primary: #0284c7;
             --primary-hover: #0369a1;
@@ -39,11 +41,13 @@
             --text-muted: #64748b;
             --input-bg: #ffffff;
             --formula-bg: rgba(241, 245, 249, 0.95);
-            --badge-bg: rgba(241, 245, 249, 0.8);
+            --badge-bg: rgba(241, 245, 249, 0.85);
+            --item-bg: rgba(241, 245, 249, 0.9);
             --grid-color: rgba(15, 23, 42, 0.08);
             --chart-tooltip-bg: rgba(255, 255, 255, 0.96);
             --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
             --success: #059669;
+            --danger: #ef4444;
             --topbar-bg: rgba(255, 255, 255, 0.8);
         }
 
@@ -75,7 +79,7 @@
             align-items: center;
         }
 
-        /* Barra Superior de Herramientas (Tema e Idioma) */
+        /* Barra Superior de Herramientas */
         .top-bar {
             max-width: 1200px;
             width: 100%;
@@ -138,7 +142,7 @@
 
         .container {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 390px 1fr;
             gap: 1.5rem;
             max-width: 1200px;
             width: 100%;
@@ -176,7 +180,6 @@
             color: var(--text-muted);
         }
 
-        /* Inputs y selects táctiles (16px para evitar auto-zoom) */
         select, input[type="number"], input[type="text"] {
             width: 100%;
             min-height: 44px;
@@ -214,7 +217,6 @@
             word-break: break-all;
         }
 
-        /* Botón accesible y táctil */
         .btn {
             display: flex;
             align-items: center;
@@ -248,6 +250,41 @@
             opacity: 0.85;
         }
 
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .btn-secondary {
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            min-height: 36px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 0.4rem;
+            width: auto;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
         .eval-section {
             margin-top: 1.25rem;
             padding-top: 1.2rem;
@@ -275,6 +312,83 @@
             font-weight: 600;
             text-align: center;
             word-break: break-word;
+        }
+
+        /* Sección de Escenarios / Base de Datos */
+        .scenarios-section {
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .save-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .save-status-msg {
+            font-size: 0.85rem;
+            color: var(--success);
+            min-height: 1.2rem;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .scenarios-list-container {
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            background: var(--item-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .scenario-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.7rem 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .scenario-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .scenario-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scenario-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .scenario-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .empty-scenarios {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 1rem 0.5rem;
         }
 
         /* Contenedor del gráfico */
@@ -454,6 +568,21 @@
                     f(2) = 0
                 </div>
             </div>
+
+            <!-- Sección de Base de Datos Interna / Gestor de Escenarios -->
+            <div class="scenarios-section">
+                <h2 class="section-title" style="font-size: 1.05rem;" data-i18n="sectionScenarios">💾 Escenarios Guardados</h2>
+                <div class="save-box">
+                    <label for="scenarioNameInput" data-i18n="lblScenarioName">Nombre del escenario:</label>
+                    <input type="text" id="scenarioNameInput" placeholder="Ej. Parábola con Vértice en Y=-4">
+                    <button class="btn btn-secondary" id="btnSaveScenario" data-i18n="btnSaveScenario">Guardar Escenario Actual</button>
+                    <div class="save-status-msg" id="saveStatusMsg"></div>
+                </div>
+
+                <div class="scenarios-list-container" id="scenariosList">
+                    <!-- Los escenarios guardados se renderizarán aquí -->
+                </div>
+            </div>
         </div>
 
         <!-- Panel del Gráfico -->
@@ -517,7 +646,18 @@
                 straightLine: "Línea recta (a = 0)",
                 activeMode: "Modo Activo",
                 evalPrompt: "Por favor ingresa un número válido",
-                evaluatedPoint: "Punto evaluado"
+                evaluatedPoint: "Punto evaluado",
+                sectionScenarios: "💾 Escenarios Guardados",
+                lblScenarioName: "Nombre del escenario:",
+                scenarioPlaceholder: "Ej. Parábola con Vértice en Y=-4",
+                btnSaveScenario: "Guardar Escenario Actual",
+                noScenarios: "No hay escenarios guardados todavía.",
+                btnLoad: "Cargar",
+                btnDelete: "Eliminar",
+                savedSuccess: "¡Escenario guardado con éxito!",
+                loadedSuccess: "¡Escenario cargado exitosamente!",
+                deletedSuccess: "Escenario eliminado.",
+                namePrompt: "Ingresa un nombre para el escenario"
             },
             en: {
                 appTitle: "Function Calculator & Grapher",
@@ -553,7 +693,117 @@
                 straightLine: "Straight line (a = 0)",
                 activeMode: "Active Mode",
                 evalPrompt: "Please enter a valid number",
-                evaluatedPoint: "Evaluated point"
+                evaluatedPoint: "Evaluated point",
+                sectionScenarios: "💾 Saved Scenarios",
+                lblScenarioName: "Scenario name:",
+                scenarioPlaceholder: "E.g. Parabola with Vertex at Y=-4",
+                btnSaveScenario: "Save Current Scenario",
+                noScenarios: "No saved scenarios yet.",
+                btnLoad: "Load",
+                btnDelete: "Delete",
+                savedSuccess: "Scenario saved successfully!",
+                loadedSuccess: "Scenario loaded successfully!",
+                deletedSuccess: "Scenario deleted.",
+                namePrompt: "Please enter a name for the scenario"
+            }
+        };
+
+        // ==========================================
+        // CAPA DE BASE DE DATOS INTERNA (IndexedDB + localStorage)
+        // ==========================================
+        const DB_NAME = 'MathFunctionScenariosDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'scenarios';
+
+        const ScenarioDB = {
+            db: null,
+
+            async init() {
+                if (!window.indexedDB) {
+                    return; // Usará fallback localStorage
+                }
+                return new Promise((resolve) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = (e) => {
+                        this.db = e.target.result;
+                        resolve(this.db);
+                    };
+                    request.onerror = () => {
+                        this.db = null;
+                        resolve(null);
+                    };
+                });
+            },
+
+            async getAll() {
+                if (this.db) {
+                    return new Promise((resolve) => {
+                        const tx = this.db.transaction(STORE_NAME, 'readonly');
+                        const store = tx.objectStore(STORE_NAME);
+                        const req = store.getAll();
+                        req.onsuccess = () => {
+                            const list = req.result || [];
+                            list.sort((a, b) => b.timestamp - a.timestamp);
+                            resolve(list);
+                        };
+                        req.onerror = () => resolve(this.getAllFallback());
+                    });
+                }
+                return this.getAllFallback();
+            },
+
+            getAllFallback() {
+                try {
+                    const raw = localStorage.getItem('math_scenarios_db');
+                    const list = raw ? JSON.parse(raw) : [];
+                    list.sort((a, b) => b.timestamp - a.timestamp);
+                    return list;
+                } catch {
+                    return [];
+                }
+            },
+
+            async save(scenario) {
+                if (this.db) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const tx = this.db.transaction(STORE_NAME, 'readwrite');
+                            const store = tx.objectStore(STORE_NAME);
+                            const req = store.put(scenario);
+                            req.onsuccess = () => resolve();
+                            req.onerror = () => reject(req.error);
+                        });
+                    } catch {
+                        // continúa al fallback
+                    }
+                }
+                const list = this.getAllFallback().filter(item => item.id !== scenario.id);
+                list.unshift(scenario);
+                localStorage.setItem('math_scenarios_db', JSON.stringify(list));
+            },
+
+            async delete(id) {
+                if (this.db) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const tx = this.db.transaction(STORE_NAME, 'readwrite');
+                            const store = tx.objectStore(STORE_NAME);
+                            const req = store.delete(id);
+                            req.onsuccess = () => resolve();
+                            req.onerror = () => reject(req.error);
+                        });
+                    } catch {
+                        // continúa al fallback
+                    }
+                }
+                const list = this.getAllFallback().filter(item => item.id !== id);
+                localStorage.setItem('math_scenarios_db', JSON.stringify(list));
             }
         };
 
@@ -584,6 +834,10 @@
         const badgeYIntercept = document.getElementById('badgeYIntercept');
         const badgeFeature = document.getElementById('badgeFeature');
         const badgeRange = document.getElementById('badgeRange');
+        const scenarioNameInput = document.getElementById('scenarioNameInput');
+        const btnSaveScenario = document.getElementById('btnSaveScenario');
+        const saveStatusMsg = document.getElementById('saveStatusMsg');
+        const scenariosList = document.getElementById('scenariosList');
 
         // Aplicar Idioma
         function applyLanguage(lang) {
@@ -599,9 +853,11 @@
                 }
             });
 
+            scenarioNameInput.placeholder = t.scenarioPlaceholder;
             langLabel.innerText = lang === 'es' ? 'English' : 'Español';
             updateThemeButtonText();
             updateBadges();
+            renderScenariosList();
             if (chartInstance) {
                 chartInstance.data.datasets[1].label = `${t.evaluatedPoint} (${highlightedPoint.x}, ${highlightedPoint.y})`;
                 chartInstance.update();
@@ -960,6 +1216,128 @@
             drawChart();
         }
 
+        // ==========================================
+        // GESTIÓN DE ESCENARIOS EN LA INTERFAZ
+        // ==========================================
+
+        function showStatusMessage(text, isError = false) {
+            saveStatusMsg.innerText = text;
+            saveStatusMsg.style.color = isError ? 'var(--danger)' : 'var(--success)';
+            saveStatusMsg.style.opacity = '1';
+            setTimeout(() => {
+                saveStatusMsg.style.opacity = '0';
+            }, 3000);
+        }
+
+        async function saveCurrentScenario() {
+            const t = i18n[currentLang];
+            const name = scenarioNameInput.value.trim();
+            if (!name) {
+                showStatusMessage(t.namePrompt, true);
+                scenarioNameInput.focus();
+                return;
+            }
+
+            const scenario = {
+                id: 'scen_' + Date.now(),
+                name: name,
+                timestamp: Date.now(),
+                dateStr: new Date().toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }),
+                functionType: functionTypeSelect.value,
+                params: {
+                    a: parseFloat(paramA.value) || 0,
+                    b: parseFloat(paramB.value) || 0,
+                    c: parseFloat(paramC.value) || 0,
+                    d: parseFloat(paramD.value) || 0
+                },
+                range: {
+                    xMin: parseFloat(xMinInput.value) || -10,
+                    xMax: parseFloat(xMaxInput.value) || 10
+                },
+                evalX: parseFloat(evalXInput.value) || 0
+            };
+
+            await ScenarioDB.save(scenario);
+            scenarioNameInput.value = '';
+            showStatusMessage(t.savedSuccess);
+            await renderScenariosList();
+        }
+
+        async function loadScenario(scenario) {
+            const t = i18n[currentLang];
+            functionTypeSelect.value = scenario.functionType;
+            paramA.value = scenario.params.a;
+            paramB.value = scenario.params.b;
+            paramC.value = scenario.params.c;
+            paramD.value = scenario.params.d;
+            xMinInput.value = scenario.range.xMin;
+            xMaxInput.value = scenario.range.xMax;
+            evalXInput.value = scenario.evalX;
+
+            updateParamFields();
+            performEvaluation();
+            showStatusMessage(`"${scenario.name}": ${t.loadedSuccess}`);
+        }
+
+        async function deleteScenario(id) {
+            const t = i18n[currentLang];
+            await ScenarioDB.delete(id);
+            showStatusMessage(t.deletedSuccess);
+            await renderScenariosList();
+        }
+
+        async function renderScenariosList() {
+            const t = i18n[currentLang];
+            const scenarios = await ScenarioDB.getAll();
+            scenariosList.innerHTML = '';
+
+            if (scenarios.length === 0) {
+                scenariosList.innerHTML = `<div class="empty-scenarios">${t.noScenarios}</div>`;
+                return;
+            }
+
+            scenarios.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+
+                const info = document.createElement('div');
+                info.className = 'scenario-info';
+
+                const title = document.createElement('div');
+                title.className = 'scenario-title';
+                title.innerText = item.name;
+
+                const meta = document.createElement('div');
+                meta.className = 'scenario-meta';
+                meta.innerText = `${item.functionType.toUpperCase()} • ${item.dateStr || ''}`;
+
+                info.appendChild(title);
+                info.appendChild(meta);
+
+                const actions = document.createElement('div');
+                actions.className = 'scenario-actions';
+
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'btn btn-secondary btn-sm';
+                loadBtn.innerText = t.btnLoad;
+                loadBtn.addEventListener('click', () => loadScenario(item));
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn btn-danger btn-sm';
+                delBtn.innerText = t.btnDelete;
+                delBtn.addEventListener('click', () => deleteScenario(item.id));
+
+                actions.appendChild(loadBtn);
+                actions.appendChild(delBtn);
+
+                card.appendChild(info);
+                card.appendChild(actions);
+                scenariosList.appendChild(card);
+            });
+        }
+
         // Toggles Tema e Idioma
         themeToggle.addEventListener('click', () => {
             applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
@@ -1015,6 +1393,11 @@
             if (e.key === 'Enter') performEvaluation();
         });
 
+        btnSaveScenario.addEventListener('click', saveCurrentScenario);
+        scenarioNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') saveCurrentScenario();
+        });
+
         window.addEventListener('resize', () => {
             if (chartInstance) {
                 chartInstance.resize();
@@ -1022,10 +1405,14 @@
         });
 
         // Inicialización
-        applyTheme(currentTheme);
-        applyLanguage(currentLang);
-        updateParamFields();
-        performEvaluation();
+        (async function initApp() {
+            await ScenarioDB.init();
+            applyTheme(currentTheme);
+            applyLanguage(currentLang);
+            updateParamFields();
+            performEvaluation();
+            await renderScenariosList();
+        })();
     </script>
 </body>
 </html>
